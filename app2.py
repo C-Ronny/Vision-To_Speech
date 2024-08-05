@@ -3,19 +3,19 @@ import os
 import cv2
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
-import tensorflow as tf
+from sentence_transformers import SentenceTransformer, util
 from googletrans import Translator
 from gtts import gTTS
 
 # Disable parallelism warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-# Initialize the processor and model for image captioning
+# Load the image captioning model and processor from Hugging Face
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 
-# Load the semantic similarity model from .h5 file
-semantic_model = tf.keras.models.load_model('semantic_model.h5')
+# Load the semantic similarity model directly from Hugging Face
+semantic_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
 # Function to convert frame to text
 def frame_to_text(frame):
@@ -28,11 +28,11 @@ def frame_to_text(frame):
 def get_unique_meanings(texts, threshold=0.75):
     unique_texts = []
     for text in texts:
-        text_embedding = semantic_model.predict([text])
+        text_embedding = semantic_model.encode(text, convert_to_tensor=True)
         is_unique = True
         for unique_text in unique_texts:
-            unique_text_embedding = semantic_model.predict([unique_text])
-            similarity = np.dot(text_embedding, unique_text_embedding.T).item()
+            unique_text_embedding = semantic_model.encode(unique_text, convert_to_tensor=True)
+            similarity = util.pytorch_cos_sim(text_embedding, unique_text_embedding).item()
             if similarity > threshold:
                 is_unique = False
                 break
@@ -58,11 +58,11 @@ def video_to_text(video_path, repeat_threshold=5):
             action_count += 1
         else:
             if action_count >= repeat_threshold and current_action is not None:
-                frame_texts.append(f"There was '{current_action}'.")
+                frame_texts.append(f"'{current_action}'.")
             current_action = text
             action_count = 1
     if action_count >= repeat_threshold and current_action is not None:
-        frame_texts.append(f"The action '{current_action}'.")
+        frame_texts.append(f"'{current_action}'.")
     cap.release()
     unique_frame_texts = get_unique_meanings(frame_texts)
     video_description = " ".join(unique_frame_texts)
