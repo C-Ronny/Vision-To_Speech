@@ -79,25 +79,47 @@ def translate_text(text, target_lang='ha'):
     translation = translator.translate(text, dest=target_lang)
     return translation.text
 
-# Streamlit UI
-st.title("Video to Speech Application")
-video_file = st.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
+# Streamlit app layout
+st.set_page_config(page_title="Video to Text Description", layout="wide")
 
-if video_file is not None:
+st.title("Video to Text Description and Translation")
+st.write("Upload a video file to generate a text description, translate it, and convert it to speech.")
+
+# Sidebar for file upload and options
+st.sidebar.header("Upload and Options")
+uploaded_file = st.sidebar.file_uploader("Upload a video file", type=["mp4", "mov", "avi", "mkv"])
+target_language = st.sidebar.selectbox("Select target language for translation", ['ha', 'ig', 'es', 'sn'])
+
+if uploaded_file is not None:
     with open("temp_video.mp4", "wb") as f:
-        f.write(video_file.getbuffer())
-    
-    # Process the video to get the description
-    description = video_to_text("temp_video.mp4")
-    st.write("Original Description:", description)
-    
-    # Translate the description to Hausa
-    translated_description = translate_text(description, target_lang='ha')
-    st.write("Translated Description:", translated_description)
-    
-    # Convert the original and translated descriptions to speech
-    text_to_speech(description, filename="output_en.mp3", lang='en')
-    text_to_speech(translated_description, filename="output_ha.mp3", lang='ha')
-    
-    # Play the audio file in the Streamlit app
-    st.audio("output_ha.mp3", format="audio/mp3")
+        f.write(uploaded_file.getbuffer())
+
+    st.video("temp_video.mp4")
+
+    if st.sidebar.button("Generate Description"):
+        with st.spinner("Processing..."):
+            description = video_to_text("temp_video.mp4")
+            if description:
+                st.success("Description generated successfully!")
+                st.write("Original Description:", description)
+
+                translated_description = translate_text(description, target_lang=target_language)
+                st.write(f"Translated Description ({target_language}):", translated_description)
+
+                if st.sidebar.button("Play Audio"):
+                    text_to_speech(translated_description, lang=target_language)
+                    audio_file = open("output.mp3", "rb")
+                    audio_bytes = audio_file.read()
+                    st.audio(audio_bytes, format="audio/mp3")
+else:
+    st.info("Please upload a video file to start.")
+
+# Main content area
+st.header("Instructions")
+st.write("""
+1. Upload a video file using the sidebar.
+2. Select the target language for translation.
+3. Click on 'Generate Description' to process the video and generate text.
+4. The translated description will be displayed below the original description.
+5. Click on 'Play Audio' to listen to the translated description.
+""")
