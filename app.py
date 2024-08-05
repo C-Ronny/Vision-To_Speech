@@ -99,6 +99,5 @@ if video_file is not None:
     text_to_speech(description, filename="output_en.mp3", lang='en')
     text_to_speech(translated_description, filename="output_ha.mp3", lang='ha')
     
-    # Play the audio files in the Streamlit app
-    st.audio("output_en.mp3", format="audio/mp3")
+    # Play the audio file in the Streamlit app
     st.audio("output_ha.mp3", format="audio/mp3")
