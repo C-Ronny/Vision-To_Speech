@@ -10,11 +10,11 @@ from gtts import gTTS
 # Disable parallelism warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-# Initialize the processor and model for image captioning
+# Load the image captioning model and processor from Hugging Face
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 
-# Initialize the semantic similarity model
+# Load the semantic similarity model directly from Hugging Face
 semantic_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
 # Function to convert frame to text
@@ -69,10 +69,9 @@ def video_to_text(video_path, repeat_threshold=5):
     return video_description
 
 # Function to convert text to speech
-def text_to_speech(text, lang='en'):
+def text_to_speech(text, filename="output.mp3", lang='en'):
     tts = gTTS(text=text, lang=lang)
-    tts.save("output.mp3")
-    os.system("afplay output.mp3")
+    tts.save(filename)
 
 # Function to translate text
 def translate_text(text, target_lang='ha'):
@@ -87,9 +86,19 @@ video_file = st.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
 if video_file is not None:
     with open("temp_video.mp4", "wb") as f:
         f.write(video_file.getbuffer())
+    
+    # Process the video to get the description
     description = video_to_text("temp_video.mp4")
     st.write("Original Description:", description)
+    
+    # Translate the description to Hausa
     translated_description = translate_text(description, target_lang='ha')
     st.write("Translated Description:", translated_description)
-    text_to_speech(translated_description, lang='ha')
-    st.audio("output.mp3")
+    
+    # Convert the original and translated descriptions to speech
+    text_to_speech(description, filename="output_en.mp3", lang='en')
+    text_to_speech(translated_description, filename="output_ha.mp3", lang='ha')
+    
+    # Play the audio files in the Streamlit app
+    st.audio("output_en.mp3", format="audio/mp3")
+    st.audio("output_ha.mp3", format="audio/mp3")
