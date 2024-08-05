@@ -48,7 +48,7 @@ app.py
 To test the accuracy of the model, you can manually compare the generated descriptions with the actual video content. 
 
 
-### Hosting the Application
+### Hosting the Application (Using Streamlit)
 Run the program on your device terminal and open the location of your app.py file and run the code:    
 streamlit run app.py
 
