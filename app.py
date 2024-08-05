@@ -108,7 +108,8 @@ if uploaded_file is not None:
                 st.write(f"Translated Description ({target_language}):", translated_description)
 
                 audio_bytes = text_to_speech(translated_description, lang=target_language)
-                st.audio(audio_bytes.getvalue(), format="audio/mp3")
+                st.audio(audio_bytes.read(), format="audio/mp3")
+                
 
 
 else:
