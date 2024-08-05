@@ -7,7 +7,7 @@ from sentence_transformers import SentenceTransformer, util
 from googletrans import Translator
 from gtts import gTTS
 import numpy as np
-from io import BytesIO
+from tempfile import NamedTemporaryFile
 
 # Disable parallelism warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -66,13 +66,12 @@ def video_to_text(video_path, repeat_threshold=5):
     video_description = " ".join(unique_frame_texts)
     return video_description
 
-# Function to convert text to speech and return audio bytes
+# Function to convert text to speech and return the path to the audio file
 def text_to_speech(text, lang='en'):
     tts = gTTS(text=text, lang=lang)
-    audio_bytes = BytesIO()
-    tts.write_to_fp(audio_bytes)
-    audio_bytes.seek(0)
-    return audio_bytes
+    temp_audio = NamedTemporaryFile(delete=False, suffix=".mp3")
+    tts.save(temp_audio.name)
+    return temp_audio.name
 
 # Function to translate text
 def translate_text(text, target_lang='ha'):
@@ -107,11 +106,8 @@ if uploaded_file is not None:
                 translated_description = translate_text(description, target_lang=target_language)
                 st.write(f"Translated Description ({target_language}):", translated_description)
 
-                audio_bytes = text_to_speech(translated_description, lang=target_language)
-                st.audio(audio_bytes.read(), format="audio/mp3")
-                
-
-
+                audio_file_path = text_to_speech(translated_description, lang=target_language)
+                st.audio(audio_file_path, format="audio/mp3")
 else:
     st.info("Please upload a video file to start.")
 
