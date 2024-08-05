@@ -23,6 +23,8 @@ Libraries:
 - sentence_transformers
 - googletrans
 - gtts
+- espeak
+- speak
 
 ### Setup and Installation
 
@@ -49,3 +51,6 @@ To test the accuracy of the model, you can manually compare the generated descri
 ### Hosting the Application
 Run the program on your device terminal and open the location of your app.py file and run the code:    
 streamlit run app.py
+
+### Link to Youtube Video
+https://youtu.be/SUVFWKNbu8Y
