@@ -1,0 +1,8 @@
+streamlit
+transformers
+sentence-transformers
+googletrans==4.0.0-rc1
+gtts
+torch
+Pillow
+opencv-python-headless
