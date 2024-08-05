@@ -6,6 +6,7 @@ from transformers import BlipProcessor, BlipForConditionalGeneration
 from sentence_transformers import SentenceTransformer, util
 from googletrans import Translator
 from gtts import gTTS
+import numpy as np
 
 # Disable parallelism warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -46,23 +47,19 @@ def video_to_text(video_path, repeat_threshold=5):
     if not cap.isOpened():
         st.error("Error: Could not open video.")
         return ""
-    current_action = None
-    action_count = 0
+    
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_indices = np.linspace(0, total_frames - 1, 15, dtype=int)
+    
     frame_texts = []
-    while True:
+    for idx in frame_indices:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
         ret, frame = cap.read()
         if not ret:
             break
         text = frame_to_text(frame)
-        if text == current_action:
-            action_count += 1
-        else:
-            if action_count >= repeat_threshold and current_action is not None:
-                frame_texts.append(f"'{current_action}'.")
-            current_action = text
-            action_count = 1
-    if action_count >= repeat_threshold and current_action is not None:
-        frame_texts.append(f"'{current_action}'.")
+        frame_texts.append(text)
+    
     cap.release()
     unique_frame_texts = get_unique_meanings(frame_texts)
     video_description = " ".join(unique_frame_texts)
