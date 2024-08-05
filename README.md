@@ -13,14 +13,16 @@ Text to Speech: Converts the text descriptions into speech using Google Text-to-
 
 ### Requirements
 Python 3.7 or higher
+
 Libraries:
-os
-cv2 (OpenCV)
-PIL (Pillow)
-transformers
-sentence_transformers
-googletrans
-gtts
+
+- os
+- cv2 (OpenCV)
+- PIL (Pillow)
+- transformers
+- sentence_transformers
+- googletrans
+- gtts
 
 ### Setup and Installation
 
