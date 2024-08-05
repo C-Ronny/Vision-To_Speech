@@ -108,10 +108,9 @@ if uploaded_file is not None:
                 st.write(f"Translated Description ({target_language}):", translated_description)
 
                 audio_bytes = text_to_speech(translated_description, lang=target_language)
-                if audio_bytes:
-                    st.audio(audio_bytes.getvalue(), format="audio/mp3")
-                else:
-                    st.error("Error: Unable to generate audio.")
+                st.audio(audio_bytes.getvalue(), format="audio/mp3")
+
+
 else:
     st.info("Please upload a video file to start.")
 
