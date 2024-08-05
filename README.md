@@ -28,12 +28,12 @@ Libraries:
 
 ##### Clone the repository:
 ##### Install the required libraries:
-pip install opencv-python
-pip install Pillow
-pip install transformers
-pip install sentence-transformers
-pip install googletrans==4.0.0-rc1
-pip install gtts
+- pip install opencv-python
+- pip install Pillow
+- pip install transformers
+- pip install sentence-transformers
+- pip install googletrans==4.0.0-rc1
+- pip install gtts
 
 # Usage
 Prepare your video file and place it in the project directory.
