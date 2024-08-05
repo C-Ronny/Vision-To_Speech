@@ -42,7 +42,7 @@ Prepare your video file and place it in the project directory.
 Update the video_path variable in the script with the path to your video file.
 
 Run the script:
-***** replace with streamlit app name here ***** (python vision_to_speech.py)
+app.py
 
 ### Testing the Model
 To test the accuracy of the model, you can manually compare the generated descriptions with the actual video content. 
