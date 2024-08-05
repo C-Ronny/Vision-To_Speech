@@ -88,7 +88,7 @@ st.write("Upload a video file to generate a text description, translate it, and 
 # Sidebar for file upload and options
 st.sidebar.header("Upload and Options")
 uploaded_file = st.sidebar.file_uploader("Upload a video file", type=["mp4", "mov", "avi", "mkv"])
-target_language = st.sidebar.selectbox("Select target language for translation", ['ha', 'ig', 'es', 'sn'])
+target_language = st.sidebar.selectbox("Select target language for translation (ha - Hausa, sn - Shona, yo -  Yoruba, en - English", ['ha', 'sn', 'yo', 'en'])
 
 if uploaded_file is not None:
     with open("temp_video.mp4", "wb") as f:
