@@ -7,6 +7,7 @@ from sentence_transformers import SentenceTransformer, util
 from googletrans import Translator
 from gtts import gTTS
 import numpy as np
+from io import BytesIO
 
 # Disable parallelism warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -65,10 +66,13 @@ def video_to_text(video_path, repeat_threshold=5):
     video_description = " ".join(unique_frame_texts)
     return video_description
 
-# Function to convert text to speech
-def text_to_speech(text, filename="output.mp3", lang='en'):
+# Function to convert text to speech and return audio bytes
+def text_to_speech(text, lang='en'):
     tts = gTTS(text=text, lang=lang)
-    tts.save(filename)
+    audio_bytes = BytesIO()
+    tts.write_to_fp(audio_bytes)
+    audio_bytes.seek(0)
+    return audio_bytes
 
 # Function to translate text
 def translate_text(text, target_lang='ha'):
@@ -103,11 +107,8 @@ if uploaded_file is not None:
                 translated_description = translate_text(description, target_lang=target_language)
                 st.write(f"Translated Description ({target_language}):", translated_description)
 
-                if st.sidebar.button("Play Audio"):
-                    text_to_speech(translated_description, lang=target_language)
-                    audio_file = open("output.mp3", "rb")
-                    audio_bytes = audio_file.read()
-                    st.audio(audio_bytes, format="audio/mp3")
+                audio_bytes = text_to_speech(translated_description, lang=target_language)
+                st.audio(audio_bytes, format="audio/mp3")
 else:
     st.info("Please upload a video file to start.")
 
@@ -118,5 +119,5 @@ st.write("""
 2. Select the target language for translation.
 3. Click on 'Generate Description' to process the video and generate text.
 4. The translated description will be displayed below the original description.
-5. Click on 'Play Audio' to listen to the translated description.
+5. The audio will be played automatically after the translation.
 """)
