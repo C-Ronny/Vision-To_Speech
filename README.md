@@ -34,7 +34,8 @@ Libraries:
 - pip install Pillow
 - pip install transformers
 - pip install sentence-transformers
-- pip install googletrans==4.0.0-rc1
+- // pip install googletrans==4.0.0-rc1
+- pip install googletrans==4.0.2
 - pip install gtts
 
 ### Usage
